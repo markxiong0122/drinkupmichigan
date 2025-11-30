@@ -22,6 +22,7 @@ export default function HydrationTracker() {
     const [dailyGoal, setDailyGoal] = useState(3000);
     const [mlPerSecond, setMlPerSecond] = useState(150);
     const [totalDailyWater, setTotalDailyWater] = useState(0);
+    const [allTimeWater, setAllTimeWater] = useState(0);
     const [isBottleHeld, setIsBottleHeld] = useState(false);
     const [isDrinkingPressed, setIsDrinkingPressed] = useState(false);
     const [statusText, setStatusText] = useState('Ready to drink');
@@ -59,6 +60,14 @@ export default function HydrationTracker() {
                 console.error("Failed to parse saved data", e);
             }
         }
+        
+        // Load all-time water
+        const allTimeSaved = localStorage.getItem('allTimeWater');
+        if (allTimeSaved) {
+            setAllTimeWater(parseInt(allTimeSaved));
+        } else {
+            localStorage.setItem('allTimeWater', '0');
+        }
     }, []);
 
     // Save data whenever relevant state changes
@@ -72,14 +81,6 @@ export default function HydrationTracker() {
         };
         localStorage.setItem('hydrationData', JSON.stringify(data));
     }, [totalDailyWater, currentWater, dailyGoal, mlPerSecond]);
-    
-    // Initialize all-time water on first load
-    useEffect(() => {
-        const allTimeSaved = localStorage.getItem('allTimeWater');
-        if (!allTimeSaved) {
-            localStorage.setItem('allTimeWater', '0');
-        }
-    }, []);
 
     // Check for goal completion
     useEffect(() => {
@@ -131,20 +132,21 @@ export default function HydrationTracker() {
                 setTotalDailyWater(prev => prev + waterAdded);
                 
                 // Update all-time water
-                const allTimeSaved = localStorage.getItem('allTimeWater');
-                let allTimeTotal = allTimeSaved ? parseInt(allTimeSaved) : 0;
-                allTimeTotal += waterAdded;
-                localStorage.setItem('allTimeWater', allTimeTotal.toString());
+                setAllTimeWater(prev => {
+                    const newValue = prev + waterAdded;
+                    localStorage.setItem('allTimeWater', newValue.toString());
+                    return newValue;
+                });
             }
 
             drinkingStartTimeRef.current = 0;
         }
     };
 
-    // Keyboard controls - NEW LOGIC
+    // Keyboard controls
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (['ArrowUp', 'ArrowDown', 'Space'].includes(e.code)) {
+            if (['ArrowUp', 'ArrowDown'].includes(e.code)) {
                 e.preventDefault();
             }
 
@@ -156,30 +158,6 @@ export default function HydrationTracker() {
                 setIsDrinkingPressed(true);
                 updateStatus(isBottleHeldRef.current, true);
                 updateDrinkingState(isBottleHeldRef.current, true);
-            } else if (e.code === 'Space') {
-                // Reset everything
-                const held = isBottleHeldRef.current;
-                const pressed = isDrinkingPressedRef.current;
-                
-                if (drinkingStartTimeRef.current > 0) {
-                    const drinkDuration = (Date.now() - drinkingStartTimeRef.current) / 1000;
-                    const waterAdded = Math.round(drinkDuration * mlPerSecondRef.current);
-
-                    if (waterAdded > 0) {
-                        setCurrentWater(prev => prev + waterAdded);
-                        setTotalDailyWater(prev => prev + waterAdded);
-                        
-                        const allTimeSaved = localStorage.getItem('allTimeWater');
-                        let allTimeTotal = allTimeSaved ? parseInt(allTimeSaved) : 0;
-                        allTimeTotal += waterAdded;
-                        localStorage.setItem('allTimeWater', allTimeTotal.toString());
-                    }
-                }
-
-                setIsBottleHeld(false);
-                setIsDrinkingPressed(false);
-                drinkingStartTimeRef.current = 0;
-                updateStatus(false, false);
             }
         };
 
@@ -223,10 +201,11 @@ export default function HydrationTracker() {
                         setCurrentWater(prev => prev + stepWater);
                         setTotalDailyWater(prev => prev + stepWater);
                         
-                        const allTimeSaved = localStorage.getItem('allTimeWater');
-                        let allTimeTotal = allTimeSaved ? parseInt(allTimeSaved) : 0;
-                        allTimeTotal += stepWater;
-                        localStorage.setItem('allTimeWater', allTimeTotal.toString());
+                        setAllTimeWater(prev => {
+                            const newValue = prev + stepWater;
+                            localStorage.setItem('allTimeWater', newValue.toString());
+                            return newValue;
+                        });
                         
                         drinkingStartTimeRef.current = now;
                     }
@@ -256,7 +235,6 @@ export default function HydrationTracker() {
                     <h1>HydroTrack</h1>
                 </div>
                 <div className={styles.headerButtons}>
-                    <a href="/rewards" className={styles.rewardsBtn}>🏆 Rewards</a>
                     <button className={styles.settingsBtn} onClick={() => setShowSettings(true)}>⚙️ Settings</button>
                 </div>
             </div>
@@ -264,7 +242,12 @@ export default function HydrationTracker() {
             <div className={styles.mainContainer}>
                 <div className={styles.infoContainer}>
                     <Stats dailyGoal={dailyGoal} totalDailyWater={totalDailyWater} />
-                    <Reward percentage={percentage} />
+                    <Reward 
+                        percentage={percentage} 
+                        totalDailyWater={totalDailyWater}
+                        dailyGoal={dailyGoal}
+                        allTimeWater={allTimeWater}
+                    />
                 </div>
 
                 <div className={styles.bottleContainer}>

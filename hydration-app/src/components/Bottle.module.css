@@ -37,9 +37,6 @@
     width: 100%;
     background: linear-gradient(180deg, #3b82f6 0%, #1e40af 100%);
     transition: height 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .bottle.drinking .water {
@@ -53,8 +50,14 @@
 }
 
 .waterAmount {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
     color: white;
     font-size: 1.4rem;
     font-weight: 700;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    white-space: nowrap;
 }

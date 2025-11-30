@@ -18,8 +18,8 @@ export default function Bottle({ currentWater, dailyGoal, isBottleActive, isDrin
                     className={styles.water} 
                     style={{ height: `${percentage}%` }}
                 >
-                    <span className={styles.waterAmount}>{currentWater} mL</span>
                 </div>
+                <span className={styles.waterAmount}>{currentWater} mL</span>
             </div>
         </div>
     );

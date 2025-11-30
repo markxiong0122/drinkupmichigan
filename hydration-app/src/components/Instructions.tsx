@@ -17,12 +17,6 @@ export default function Instructions() {
                         Hold to <span className={styles.instructionHighlight}>drink water</span>
                     </div>
                 </div>
-                <div className={styles.instructionItem}>
-                    <div className={styles.keyBadge}>SPACE</div>
-                    <div className={styles.instructionText}>
-                        Press to <span className={styles.instructionHighlight}>put down cup</span>
-                    </div>
-                </div>
             </div>
             <div className={styles.newMechanicNotice}>
                 <div className={styles.noticeTitle}>💡 New Mechanic:</div>
