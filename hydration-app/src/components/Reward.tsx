@@ -1,4 +1,12 @@
-import styles from './Reward.module.css';
+import {
+    Card,
+    CardContent,
+    Typography,
+    Box,
+    Chip,
+    LinearProgress,
+} from '@mui/material';
+import { EmojiEvents as EmojiEventsIcon, Waves as WavesIcon } from '@mui/icons-material';
 
 interface RewardProps {
     percentage: number;
@@ -19,7 +27,7 @@ const rewards = [
 export default function Reward({ percentage, totalDailyWater, dailyGoal, allTimeWater }: RewardProps) {
     const lakeMichiganPercentage = (allTimeWater / LAKE_MICHIGAN_VOLUME_ML) * 100;
     const lakeMichiganLiters = allTimeWater / 1000;
-    
+
     let currentReward = rewards[0];
     for (const reward of rewards) {
         if (percentage >= reward.threshold) {
@@ -28,59 +36,78 @@ export default function Reward({ percentage, totalDailyWater, dailyGoal, allTime
     }
 
     return (
-        <div className={styles.container}>
-            {/* Daily Progress */}
-            <div className={styles.card}>
-                <div className={styles.cardTitle}>🏆 Current Status</div>
-                <div className={styles.rewardDisplay}>
-                    <div className={styles.rewardEmoji}>{currentReward.emoji}</div>
-                    <div className={styles.rewardName}>{currentReward.name}</div>
-                    <div className={styles.rewardDescription}>{currentReward.description}</div>
-                    <div className={styles.progressContainer}>
-                        <div className={styles.progressBar}>
-                            <div 
-                                className={styles.progressFill} 
-                                style={{ width: `${percentage}%` }}
-                            ></div>
-                        </div>
-                        <div className={styles.progressText}>
-                            {totalDailyWater} / {dailyGoal} mL ({Math.round(percentage)}%)
-                        </div>
-                    </div>
-                </div>
-                
-                {/* Mini Rewards Grid */}
-                <div className={styles.miniGrid}>
-                    {rewards.map((reward, index) => (
-                        <div 
-                            key={index} 
-                            className={`${styles.miniReward} ${percentage >= reward.threshold ? styles.unlocked : ''}`}
-                            title={reward.name}
-                        >
-                            <div className={styles.miniEmoji}>{reward.emoji}</div>
-                            <div className={styles.miniThreshold}>{reward.threshold === 100 ? '100' : reward.threshold}%</div>
-                        </div>
-                    ))}
-                </div>
-            </div>
+        <>
+            <Card>
+                <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                        <EmojiEventsIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
+                        Current Status
+                    </Typography>
+                    <Box sx={{ textAlign: 'center', my: 3 }}>
+                        <Typography variant="h2">{currentReward.emoji}</Typography>
+                        <Typography variant="h5" component="div" fontWeight="bold">
+                            {currentReward.name}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                            {currentReward.description}
+                        </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                        <Box sx={{ width: '100%', mr: 1 }}>
+                            <LinearProgress variant="determinate" value={percentage} sx={{ height: 10, borderRadius: 5 }} />
+                        </Box>
+                        <Box sx={{ minWidth: 35 }}>
+                            <Typography variant="body2" color="text.secondary">{`${Math.round(percentage)}%`}</Typography>
+                        </Box>
+                    </Box>
+                     <Typography variant="body2" color="text.secondary" align="center">
+                        {totalDailyWater} / {dailyGoal} mL
+                    </Typography>
 
-            {/* Lake Michigan Challenge */}
-            <div className={`${styles.card} ${styles.lakeCard}`}>
-                <div className={styles.cardTitle}>🌊 Lake Michigan Goal</div>
-                <div className={styles.lakeStats}>
-                    <div className={styles.lakeStat}>
-                        <div className={styles.lakeValue}>{lakeMichiganLiters.toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
-                        <div className={styles.lakeLabel}>Liters Total</div>
-                    </div>
-                    <div className={styles.lakeStat}>
-                        <div className={styles.lakeValue}>{lakeMichiganPercentage.toExponential(2)}%</div>
-                        <div className={styles.lakeLabel}>of Lake</div>
-                    </div>
-                </div>
-                <div className={styles.lakeNote}>
-                    Contributing to draining 4,920 km³ of water!
-                </div>
-            </div>
-        </div>
+                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, mt: 2 }}>
+                        {rewards.map((reward, index) => (
+                            <Chip
+                                key={index}
+                                icon={<Typography variant="h6">{reward.emoji}</Typography>}
+                                label={`${reward.threshold}%`}
+                                variant={percentage >= reward.threshold ? 'filled' : 'outlined'}
+                                color={percentage >= reward.threshold ? 'success' : 'default'}
+                                sx={{ width: '100%' }}
+                            />
+                        ))}
+                    </Box>
+                </CardContent>
+            </Card>
+
+            <Card sx={{ mt: 4 }}>
+                <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                        <WavesIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
+                        Lake Michigan Goal
+                    </Typography>
+                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, textAlign: 'center' }}>
+                        <Box>
+                            <Typography variant="h5" component="div" fontWeight="bold">
+                                {lakeMichiganLiters.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                Liters Total
+                            </Typography>
+                        </Box>
+                        <Box>
+                            <Typography variant="h5" component="div" fontWeight="bold">
+                                {lakeMichiganPercentage.toExponential(2)}%
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                of Lake
+                            </Typography>
+                        </Box>
+                    </Box>
+                    <Typography variant="caption" color="text.secondary" align="center" component="p" sx={{ mt: 2 }}>
+                        Contributing to draining 4,920 km³ of water!
+                    </Typography>
+                </CardContent>
+            </Card>
+        </>
     );
 }

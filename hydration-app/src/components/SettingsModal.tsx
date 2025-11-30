@@ -1,5 +1,13 @@
 import { useState, useEffect } from 'react';
-import styles from './SettingsModal.module.css';
+import {
+    Modal,
+    Card,
+    CardContent,
+    Typography,
+    TextField,
+    Button,
+    Box,
+} from '@mui/material';
 
 interface SettingsModalProps {
     isOpen: boolean;
@@ -47,59 +55,59 @@ export default function SettingsModal({ isOpen, onClose, onSave, currentGoal, cu
         onSave(goal, mlPerSecond, timerSeconds);
     };
 
-    if (!isOpen) return null;
-
     return (
-        <div className={`${styles.modal} ${isOpen ? styles.show : ''}`} onClick={onClose}>
-            <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-                <h2>⚙️ Settings</h2>
-                <div className={styles.formGroup}>
-                    <label htmlFor="goalInput">Daily Goal (mL):</label>
-                    <input
-                        type="number"
-                        id="goalInput"
-                        min="500"
-                        max="10000"
-                        step="100"
-                        value={goal}
-                        onChange={(e) => setGoal(parseInt(e.target.value))}
-                        className={errors.goal ? styles.inputError : ''}
-                    />
-                    {errors.goal && <div className={styles.errorText}>{errors.goal}</div>}
-                </div>
-                <div className={styles.formGroup}>
-                    <label htmlFor="mlPerSecondInput">Water per second (mL):</label>
-                    <input
-                        type="number"
-                        id="mlPerSecondInput"
-                        min="10"
-                        max="200"
-                        step="10"
-                        value={mlPerSecond}
-                        onChange={(e) => setMlPerSecond(parseInt(e.target.value))}
-                        className={errors.mlPerSecond ? styles.inputError : ''}
-                    />
-                    {errors.mlPerSecond && <div className={styles.errorText}>{errors.mlPerSecond}</div>}
-                </div>
-                <div className={styles.formGroup}>
-                    <label htmlFor="timerSecondsInput">Reminder timer (seconds):</label>
-                    <input
-                        type="number"
-                        id="timerSecondsInput"
-                        min="5"
-                        max="300"
-                        step="5"
-                        value={timerSeconds}
-                        onChange={(e) => setTimerSeconds(parseInt(e.target.value))}
-                        className={errors.timerSeconds ? styles.inputError : ''}
-                    />
-                    {errors.timerSeconds && <div className={styles.errorText}>{errors.timerSeconds}</div>}
-                </div>
-                <div className={styles.btnGroup}>
-                    <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={handleSave}>Save</button>
-                    <button className={`${styles.btn} ${styles.btnSecondary}`} onClick={onClose}>Cancel</button>
-                </div>
-            </div>
-        </div>
+        <Modal
+            open={isOpen}
+            onClose={onClose}
+            aria-labelledby="settings-modal-title"
+            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+            <Card sx={{ minWidth: 400, maxWidth: '90vw' }}>
+                <CardContent>
+                    <Typography id="settings-modal-title" variant="h5" component="h2" gutterBottom>
+                        Settings
+                    </Typography>
+                    <Box component="form" noValidate autoComplete="off" sx={{ mt: 3 }}>
+                        <TextField
+                            label="Daily Goal (mL)"
+                            type="number"
+                            fullWidth
+                            margin="normal"
+                            value={goal}
+                            onChange={(e) => setGoal(parseInt(e.target.value))}
+                            error={!!errors.goal}
+                            helperText={errors.goal}
+                            inputProps={{ min: 500, max: 10000, step: 100 }}
+                        />
+                        <TextField
+                            label="Water per second (mL)"
+                            type="number"
+                            fullWidth
+                            margin="normal"
+                            value={mlPerSecond}
+                            onChange={(e) => setMlPerSecond(parseInt(e.target.value))}
+                            error={!!errors.mlPerSecond}
+                            helperText={errors.mlPerSecond}
+                            inputProps={{ min: 10, max: 200, step: 10 }}
+                        />
+                        <TextField
+                            label="Reminder timer (seconds)"
+                            type="number"
+                            fullWidth
+                            margin="normal"
+                            value={timerSeconds}
+                            onChange={(e) => setTimerSeconds(parseInt(e.target.value))}
+                            error={!!errors.timerSeconds}
+                            helperText={errors.timerSeconds}
+                            inputProps={{ min: 5, max: 300, step: 5 }}
+                        />
+                        <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                            <Button onClick={onClose}>Cancel</Button>
+                            <Button variant="contained" onClick={handleSave}>Save</Button>
+                        </Box>
+                    </Box>
+                </CardContent>
+            </Card>
+        </Modal>
     );
 }

@@ -1,27 +1,37 @@
-import styles from './Instructions.module.css';
+import {
+    Card,
+    CardContent,
+    Typography,
+    Box,
+    Chip,
+    Alert,
+    AlertTitle,
+} from '@mui/material';
+import { KeyboardArrowUp as KeyboardArrowUpIcon, KeyboardArrowDown as KeyboardArrowDownIcon, Info as InfoIcon } from '@mui/icons-material';
 
 export default function Instructions() {
     return (
-        <div className={styles.card}>
-            <div className={styles.cardTitle}>🎮 Controls</div>
-            <div className={styles.instructionsGrid}>
-                <div className={styles.instructionItem}>
-                    <div className={styles.keyBadge}>↑ UP</div>
-                    <div className={styles.instructionText}>
-                        Hold to <span className={styles.instructionHighlight}>pick up cup</span>
-                    </div>
-                </div>
-                <div className={styles.instructionItem}>
-                    <div className={styles.keyBadge}>↓ DOWN</div>
-                    <div className={styles.instructionText}>
-                        Hold to <span className={styles.instructionHighlight}>drink water</span>
-                    </div>
-                </div>
-            </div>
-            <div className={styles.newMechanicNotice}>
-                <div className={styles.noticeTitle}>💡 New Mechanic:</div>
-                You must hold BOTH the cup (↑) AND drink button (↓) simultaneously to add water!
-            </div>
-        </div>
+        <Card>
+            <CardContent>
+                <Typography variant="h6" gutterBottom>
+                    Controls
+                </Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Chip icon={<KeyboardArrowUpIcon />} label="Up Arrow" variant="outlined" />
+                        <Typography variant="body2">Hold to <strong>pick up cup</strong></Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Chip icon={<KeyboardArrowDownIcon />} label="Down Arrow" variant="outlined" />
+                        <Typography variant="body2">Hold to <strong>drink water</strong></Typography>
+                    </Box>
+                </Box>
+                <Alert severity="info" sx={{ mt: 3 }}>
+                    <AlertTitle>New Mechanic</AlertTitle>
+                    You must hold BOTH the cup (↑) AND drink button (↓) simultaneously to add water!
+                </Alert>
+            </CardContent>
+        </Card>
     );
 }
+

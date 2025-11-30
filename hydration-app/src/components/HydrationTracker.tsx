@@ -2,11 +2,21 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Bottle from './Bottle';
-import styles from './HydrationTracker.module.css';
 import Instructions from './Instructions';
 import Reward from './Reward';
 import SettingsModal from './SettingsModal';
 import Stats from './Stats';
+import {
+    AppBar,
+    Box,
+    Button,
+    Card,
+    CardContent,
+    Container,
+    Toolbar,
+    Typography,
+} from '@mui/material';
+import { Settings as SettingsIcon, WaterDrop as WaterDropIcon } from '@mui/icons-material';
 
 interface HydrationData {
     date: string;
@@ -326,54 +336,68 @@ export default function HydrationTracker() {
     };
 
     return (
-        <div className={styles.container}>
-            <div className={styles.header}>
-                <div className={styles.logo}>
-                    <div className={styles.logoIcon}>💧</div>
-                    <h1>HydroTrack</h1>
-                </div>
-                <div className={styles.headerButtons}>
-                    <button className={styles.settingsBtn} onClick={() => setShowSettings(true)}>⚙️ Settings</button>
-                </div>
-            </div>
+        <Box sx={{ flexGrow: 1 }}>
+            <AppBar position="static" elevation={0} sx={{ bgcolor: 'background.paper', borderBottom: '1px solid', borderColor: 'divider' }}>
+                <Toolbar>
+                    <WaterDropIcon color="primary" sx={{ mr: 1.5, fontSize: '2rem' }} />
+                    <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: 'text.primary' }}>
+                        HydroTrack
+                    </Typography>
+                    <Button
+                        variant="outlined"
+                        startIcon={<SettingsIcon />}
+                        onClick={() => setShowSettings(true)}
+                    >
+                        Settings
+                    </Button>
+                </Toolbar>
+            </AppBar>
 
-            <div className={styles.mainContainer}>
-                <div className={styles.infoContainer}>
-                    <Stats dailyGoal={dailyGoal} totalDailyWater={totalDailyWater} />
-                    <Reward
-                        percentage={percentage}
-                        totalDailyWater={totalDailyWater}
-                        dailyGoal={dailyGoal}
-                        allTimeWater={allTimeWater}
-                    />
-                </div>
+            <Container maxWidth="lg" sx={{ mt: 4 }}>
+                <Box
+                    sx={{
+                        display: 'grid',
+                        gridTemplateColumns: {
+                            xs: '1fr',
+                            md: '1fr 1fr 1fr',
+                        },
+                        gap: 4,
+                    }}
+                >
+                    <Box>
+                        <Stats dailyGoal={dailyGoal} totalDailyWater={totalDailyWater} />
+                        <Box sx={{ mt: 4 }}>
+                            <Reward
+                                percentage={percentage}
+                                totalDailyWater={totalDailyWater}
+                                dailyGoal={dailyGoal}
+                                allTimeWater={allTimeWater}
+                            />
+                        </Box>
+                    </Box>
 
-                <div className={styles.bottleContainer}>
-                    <Bottle
-                        currentWater={currentWater}
-                        dailyGoal={dailyGoal}
-                        isBottleActive={isBottleHeld}
-                        isDrinking={isDrinking}
-                        statusText={statusText}
-                    />
-                    <div style={{
-                        textAlign: 'center',
-                        padding: '20px',
-                        borderRadius: '16px',
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                        minWidth: '200px'
-                    }}>
-                        <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}>{statusIcon}</div>
-                        <div style={{ fontSize: '1.1rem', fontWeight: 600, color: '#e0e6ed' }}>{statusText}</div>
-                        <div style={{ fontSize: '0.85rem', color: '#9ca3af', marginTop: '8px' }}>{statusHint}</div>
-                    </div>
-                </div>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+                        <Bottle
+                            currentWater={currentWater}
+                            dailyGoal={dailyGoal}
+                            isBottleActive={isBottleHeld}
+                            isDrinking={isDrinking}
+                            statusText={statusText}
+                        />
+                        <Card sx={{ minWidth: 240, textAlign: 'center' }}>
+                            <CardContent>
+                                <Typography variant="h2" sx={{ mb: 1 }}>{statusIcon}</Typography>
+                                <Typography variant="h6" color="text.primary">{statusText}</Typography>
+                                <Typography variant="body2" color="text.secondary">{statusHint}</Typography>
+                            </CardContent>
+                        </Card>
+                    </Box>
 
-                <div className={styles.infoContainer}>
-                    <Instructions />
-                </div>
-            </div>
+                    <Box>
+                        <Instructions />
+                    </Box>
+                </Box>
+            </Container>
 
             <SettingsModal
                 isOpen={showSettings}
@@ -383,6 +407,6 @@ export default function HydrationTracker() {
                 currentMlPerSecond={mlPerSecond}
                 currentTimerSeconds={timerSeconds}
             />
-        </div>
+        </Box>
     );
 }
