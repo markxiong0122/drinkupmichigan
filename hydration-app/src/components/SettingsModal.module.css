@@ -61,6 +61,22 @@
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
 }
 
+.inputError {
+    border-color: #ef4444 !important;
+}
+
+.inputError:focus {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
+}
+
+.errorText {
+    color: #ef4444;
+    font-size: 0.85rem;
+    margin-top: 8px;
+    font-weight: 500;
+}
+
 .btnGroup {
     display: flex;
     gap: 12px;
