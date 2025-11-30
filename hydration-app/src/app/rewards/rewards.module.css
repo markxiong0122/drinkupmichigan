@@ -1,0 +1,265 @@
+.container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0093E9 0%, #80D0C7 100%);
+    color: white;
+    padding: 20px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    margin: 0;
+}
+
+.backBtn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid white;
+    color: white;
+    padding: 10px 25px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.backBtn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateX(-5px);
+}
+
+.content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+/* Today's Achievement Section */
+.todaySection {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 30px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+}
+
+.todaySection h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.currentReward {
+    text-align: center;
+    padding: 20px;
+}
+
+.rewardEmoji {
+    font-size: 8rem;
+    margin-bottom: 20px;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+.rewardName {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.rewardDescription {
+    font-size: 1.3rem;
+    opacity: 0.9;
+    margin-bottom: 15px;
+}
+
+.progressText {
+    font-size: 1.1rem;
+    opacity: 0.8;
+}
+
+/* Rewards Grid */
+.rewardsGrid {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 30px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+}
+
+.rewardsGrid h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.rewardCard {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.rewardCard.unlocked {
+    background: rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.6);
+}
+
+.rewardCard.locked {
+    opacity: 0.6;
+}
+
+.rewardCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.cardEmoji {
+    font-size: 4rem;
+    margin-bottom: 15px;
+}
+
+.cardName {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.cardThreshold {
+    font-size: 1rem;
+    opacity: 0.8;
+    margin-bottom: 10px;
+}
+
+.unlockedBadge {
+    background: rgba(76, 175, 80, 0.8);
+    padding: 5px 15px;
+    border-radius: 20px;
+    display: inline-block;
+    font-size: 0.9rem;
+}
+
+.lockedBadge {
+    background: rgba(158, 158, 158, 0.5);
+    padding: 5px 15px;
+    border-radius: 20px;
+    display: inline-block;
+    font-size: 0.9rem;
+}
+
+/* Lake Michigan Section */
+.lakeMichiganSection {
+    background: linear-gradient(135deg, rgba(33, 150, 243, 0.3) 0%, rgba(3, 169, 244, 0.3) 100%);
+    padding: 30px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.lakeMichiganSection h2 {
+    font-size: 2rem;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.lakeStats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.lakeStat {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.lakeValue {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.lakeLabel {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+.lakeVisualization {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 25px;
+    border-radius: 15px;
+}
+
+.lakeInfo {
+    line-height: 1.8;
+}
+
+.lakeInfo p {
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+.funFact {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 20px;
+    font-style: italic;
+}
+
+/* Motivation Section */
+.motivationSection {
+    text-align: center;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+}
+
+.motivationText {
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 2rem;
+    }
+
+    .rewardEmoji {
+        font-size: 5rem;
+    }
+
+    .rewardName {
+        font-size: 2rem;
+    }
+
+    .grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+
+    .lakeStats {
+        grid-template-columns: 1fr;
+    }
+}
+

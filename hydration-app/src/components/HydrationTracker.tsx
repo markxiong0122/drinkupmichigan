@@ -20,7 +20,7 @@ export default function HydrationTracker() {
     // State
     const [currentWater, setCurrentWater] = useState(0);
     const [dailyGoal, setDailyGoal] = useState(3000);
-    const [mlPerSecond, setMlPerSecond] = useState(50);
+    const [mlPerSecond, setMlPerSecond] = useState(150); // Increased for faster rewards
     const [totalDailyWater, setTotalDailyWater] = useState(0);
     const [isBottleActive, setIsBottleActive] = useState(false);
     const [isDrinking, setIsDrinking] = useState(false);
@@ -52,7 +52,7 @@ export default function HydrationTracker() {
                 }
 
                 setDailyGoal(data.dailyGoal || 3000);
-                setMlPerSecond(data.mlPerSecond || 50);
+                setMlPerSecond(data.mlPerSecond || 150);
             } catch (e) {
                 console.error("Failed to parse saved data", e);
             }
@@ -70,6 +70,14 @@ export default function HydrationTracker() {
         };
         localStorage.setItem('hydrationData', JSON.stringify(data));
     }, [totalDailyWater, currentWater, dailyGoal, mlPerSecond]);
+    
+    // Initialize all-time water on first load
+    useEffect(() => {
+        const allTimeSaved = localStorage.getItem('allTimeWater');
+        if (!allTimeSaved) {
+            localStorage.setItem('allTimeWater', '0');
+        }
+    }, []);
 
     // Check for goal completion
     useEffect(() => {
@@ -117,6 +125,12 @@ export default function HydrationTracker() {
 
                     setCurrentWater(prev => prev + waterAdded);
                     setTotalDailyWater(prev => prev + waterAdded);
+                    
+                    // Update all-time water
+                    const allTimeSaved = localStorage.getItem('allTimeWater');
+                    let allTimeTotal = allTimeSaved ? parseInt(allTimeSaved) : 0;
+                    allTimeTotal += waterAdded;
+                    localStorage.setItem('allTimeWater', allTimeTotal.toString());
 
                     if (isBottleActiveRef.current) {
                         setStatusText('Holding mug');
@@ -146,6 +160,13 @@ export default function HydrationTracker() {
                      if (stepWater > 0) {
                          setCurrentWater(prev => prev + stepWater);
                          setTotalDailyWater(prev => prev + stepWater);
+                         
+                         // Update all-time water
+                         const allTimeSaved = localStorage.getItem('allTimeWater');
+                         let allTimeTotal = allTimeSaved ? parseInt(allTimeSaved) : 0;
+                         allTimeTotal += stepWater;
+                         localStorage.setItem('allTimeWater', allTimeTotal.toString());
+                         
                          drinkingStartTimeRef.current = now;
                      }
                 }
@@ -168,7 +189,10 @@ export default function HydrationTracker() {
         <div className={styles.container}>
             <div className={styles.header}>
                 <h1>💧 Hydration Tracker</h1>
-                <button className={styles.settingsBtn} onClick={() => setShowSettings(true)}>⚙️ Settings</button>
+                <div className={styles.headerButtons}>
+                    <a href="/rewards" className={styles.rewardsBtn}>🏆 Rewards</a>
+                    <button className={styles.settingsBtn} onClick={() => setShowSettings(true)}>⚙️ Settings</button>
+                </div>
             </div>
 
             <div className={styles.mainContainer}>

@@ -281,7 +281,10 @@
 <body>
     <div class="header">
         <h1>💧 Hydration Tracker</h1>
-        <button class="settings-btn" onclick="openSettings()">⚙️ Settings</button>
+        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+            <a href="rewards.html" class="settings-btn" style="text-decoration: none;">🏆 Rewards</a>
+            <button class="settings-btn" onclick="openSettings()">⚙️ Settings</button>
+        </div>
     </div>
 
     <div class="main-container">
@@ -347,7 +350,7 @@
         // State
         let currentWater = 0;
         let dailyGoal = 3000; // mL
-        let mlPerSecond = 50; // mL added per second of holding down
+        let mlPerSecond = 150; // mL added per second of holding down (increased for faster rewards)
         let isBottleActive = false;
         let isDrinking = false;
         let drinkingStartTime = 0;
@@ -374,7 +377,7 @@
                 }
 
                 dailyGoal = data.dailyGoal || 3000;
-                mlPerSecond = data.mlPerSecond || 50;
+                mlPerSecond = data.mlPerSecond || 150;
             }
             updateDisplay();
         }
@@ -389,6 +392,19 @@
                 mlPerSecond
             };
             localStorage.setItem('hydrationData', JSON.stringify(data));
+            
+            // Update all-time total
+            const allTimeSaved = localStorage.getItem('allTimeWater');
+            const previousAllTime = allTimeSaved ? parseInt(allTimeSaved) : 0;
+            localStorage.setItem('allTimeWater', previousAllTime.toString());
+        }
+        
+        // Update all-time water when water is added
+        function updateAllTimeWater(waterAdded) {
+            const allTimeSaved = localStorage.getItem('allTimeWater');
+            let allTimeTotal = allTimeSaved ? parseInt(allTimeSaved) : 0;
+            allTimeTotal += waterAdded;
+            localStorage.setItem('allTimeWater', allTimeTotal.toString());
         }
 
         // Keyboard event handlers
@@ -428,6 +444,9 @@
 
                     currentWater += waterAdded;
                     totalDailyWater += waterAdded;
+                    
+                    // Update all-time water
+                    updateAllTimeWater(waterAdded);
 
                     updateDisplay();
                     saveData();
