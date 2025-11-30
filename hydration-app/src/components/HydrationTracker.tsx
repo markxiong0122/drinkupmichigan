@@ -114,7 +114,7 @@ export default function HydrationTracker() {
         const checkInterval = setInterval(() => {
             if (lastDrinkTime !== null) {
                 const timeSinceLastDrink = Date.now() - lastDrinkTime;
-                const tenSecondsInMs = 10 * 100git 0; // 10 seconds
+                const tenSecondsInMs = 10 * 1000; // 10 seconds
                 console.log(`⏱️ Timer check: ${(timeSinceLastDrink / 1000).toFixed(1)}s since last drink`);
 
                 if (timeSinceLastDrink >= tenSecondsInMs) {
