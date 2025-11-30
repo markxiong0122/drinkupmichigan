@@ -4,24 +4,27 @@ import styles from './SettingsModal.module.css';
 interface SettingsModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (goal: number, mlPerSecond: number) => void;
+    onSave: (goal: number, mlPerSecond: number, timerSeconds: number) => void;
     currentGoal: number;
     currentMlPerSecond: number;
+    currentTimerSeconds: number;
 }
 
-export default function SettingsModal({ isOpen, onClose, onSave, currentGoal, currentMlPerSecond }: SettingsModalProps) {
+export default function SettingsModal({ isOpen, onClose, onSave, currentGoal, currentMlPerSecond, currentTimerSeconds }: SettingsModalProps) {
     const [goal, setGoal] = useState(currentGoal);
     const [mlPerSecond, setMlPerSecond] = useState(currentMlPerSecond);
-    const [errors, setErrors] = useState({ goal: '', mlPerSecond: '' });
+    const [timerSeconds, setTimerSeconds] = useState(currentTimerSeconds);
+    const [errors, setErrors] = useState({ goal: '', mlPerSecond: '', timerSeconds: '' });
 
     useEffect(() => {
         setGoal(currentGoal);
         setMlPerSecond(currentMlPerSecond);
-        setErrors({ goal: '', mlPerSecond: '' });
-    }, [currentGoal, currentMlPerSecond, isOpen]);
+        setTimerSeconds(currentTimerSeconds);
+        setErrors({ goal: '', mlPerSecond: '', timerSeconds: '' });
+    }, [currentGoal, currentMlPerSecond, currentTimerSeconds, isOpen]);
 
     const handleSave = () => {
-        const newErrors = { goal: '', mlPerSecond: '' };
+        const newErrors = { goal: '', mlPerSecond: '', timerSeconds: '' };
 
         if (isNaN(goal) || goal < 500 || goal > 10000) {
             newErrors.goal = 'Goal must be between 500 and 10000 mL';
@@ -31,13 +34,17 @@ export default function SettingsModal({ isOpen, onClose, onSave, currentGoal, cu
             newErrors.mlPerSecond = 'Water per second must be between 10 and 200 mL';
         }
 
-        if (newErrors.goal || newErrors.mlPerSecond) {
+        if (isNaN(timerSeconds) || timerSeconds < 5 || timerSeconds > 300) {
+            newErrors.timerSeconds = 'Timer must be between 5 and 300 seconds';
+        }
+
+        if (newErrors.goal || newErrors.mlPerSecond || newErrors.timerSeconds) {
             setErrors(newErrors);
             return;
         }
 
-        setErrors({ goal: '', mlPerSecond: '' });
-        onSave(goal, mlPerSecond);
+        setErrors({ goal: '', mlPerSecond: '', timerSeconds: '' });
+        onSave(goal, mlPerSecond, timerSeconds);
     };
 
     if (!isOpen) return null;
@@ -73,6 +80,20 @@ export default function SettingsModal({ isOpen, onClose, onSave, currentGoal, cu
                         className={errors.mlPerSecond ? styles.inputError : ''}
                     />
                     {errors.mlPerSecond && <div className={styles.errorText}>{errors.mlPerSecond}</div>}
+                </div>
+                <div className={styles.formGroup}>
+                    <label htmlFor="timerSecondsInput">Reminder timer (seconds):</label>
+                    <input
+                        type="number"
+                        id="timerSecondsInput"
+                        min="5"
+                        max="300"
+                        step="5"
+                        value={timerSeconds}
+                        onChange={(e) => setTimerSeconds(parseInt(e.target.value))}
+                        className={errors.timerSeconds ? styles.inputError : ''}
+                    />
+                    {errors.timerSeconds && <div className={styles.errorText}>{errors.timerSeconds}</div>}
                 </div>
                 <div className={styles.btnGroup}>
                     <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={handleSave}>Save</button>

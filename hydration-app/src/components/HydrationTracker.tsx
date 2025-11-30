@@ -14,6 +14,7 @@ interface HydrationData {
     currentWater: number;
     dailyGoal: number;
     mlPerSecond: number;
+    timerSeconds: number;
 }
 
 export default function HydrationTracker() {
@@ -21,6 +22,7 @@ export default function HydrationTracker() {
     const [currentWater, setCurrentWater] = useState(0);
     const [dailyGoal, setDailyGoal] = useState(3000);
     const [mlPerSecond, setMlPerSecond] = useState(150);
+    const [timerSeconds, setTimerSeconds] = useState(10);
     const [totalDailyWater, setTotalDailyWater] = useState(0);
     const [allTimeWater, setAllTimeWater] = useState(0);
     const [isBottleHeld, setIsBottleHeld] = useState(false);
@@ -60,6 +62,7 @@ export default function HydrationTracker() {
 
                 setDailyGoal(data.dailyGoal || 3000);
                 setMlPerSecond(data.mlPerSecond || 150);
+                setTimerSeconds(data.timerSeconds || 10);
             } catch (e) {
                 console.error("Failed to parse saved data", e);
             }
@@ -81,10 +84,11 @@ export default function HydrationTracker() {
             totalDailyWater,
             currentWater,
             dailyGoal,
-            mlPerSecond
+            mlPerSecond,
+            timerSeconds
         };
         localStorage.setItem('hydrationData', JSON.stringify(data));
-    }, [totalDailyWater, currentWater, dailyGoal, mlPerSecond]);
+    }, [totalDailyWater, currentWater, dailyGoal, mlPerSecond, timerSeconds]);
 
     // Initialize all-time water on first load
     useEffect(() => {
@@ -114,12 +118,12 @@ export default function HydrationTracker() {
         const checkInterval = setInterval(() => {
             if (lastDrinkTime !== null) {
                 const timeSinceLastDrink = Date.now() - lastDrinkTime;
-                const tenSecondsInMs = 10 * 1000; // 10 seconds
-                console.log(`⏱️ Timer check: ${(timeSinceLastDrink / 1000).toFixed(1)}s since last drink`);
+                const timerThresholdMs = timerSeconds * 1000;
+                console.log(`⏱️ Timer check: ${(timeSinceLastDrink / 1000).toFixed(1)}s since last drink (threshold: ${timerSeconds}s)`);
 
-                if (timeSinceLastDrink >= tenSecondsInMs) {
+                if (timeSinceLastDrink >= timerThresholdMs) {
                     // Play reminder sound continuously (don't reset timer)
-                    console.log('🔔 Reminder: Time to drink water! (10 seconds passed - playing sound)');
+                    console.log(`🔔 Reminder: Time to drink water! (${timerSeconds} seconds passed - playing sound)`);
                     reminderAudioRef.current?.play().catch(err => {
                         console.error('Failed to play reminder sound:', err);
                     });
@@ -131,7 +135,7 @@ export default function HydrationTracker() {
         }, 1000); // Check every second
 
         return () => clearInterval(checkInterval);
-    }, [lastDrinkTime]);
+    }, [lastDrinkTime, timerSeconds]);
 
     // Update status display
     const updateStatus = (held: boolean, pressed: boolean) => {
@@ -314,9 +318,10 @@ export default function HydrationTracker() {
     const isDrinking = isBottleHeld && isDrinkingPressed;
 
     // Settings handlers
-    const handleSaveSettings = (newGoal: number, newMlPerSecond: number) => {
+    const handleSaveSettings = (newGoal: number, newMlPerSecond: number, newTimerSeconds: number) => {
         setDailyGoal(newGoal);
         setMlPerSecond(newMlPerSecond);
+        setTimerSeconds(newTimerSeconds);
         setShowSettings(false);
     };
 
@@ -376,6 +381,7 @@ export default function HydrationTracker() {
                 onSave={handleSaveSettings}
                 currentGoal={dailyGoal}
                 currentMlPerSecond={mlPerSecond}
+                currentTimerSeconds={timerSeconds}
             />
         </div>
     );
