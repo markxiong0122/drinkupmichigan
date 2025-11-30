@@ -20,10 +20,13 @@ export default function Reward({ percentage }: RewardProps) {
     }
 
     return (
-        <div className={styles.rewardContainer}>
-            <div className={styles.rewardTitle}>Your Water Reward</div>
-            <div className={styles.rewardDisplay}>{currentReward.emoji}</div>
-            <div className={styles.rewardName}>{currentReward.name}</div>
+        <div className={styles.card}>
+            <div className={styles.cardTitle}>🏆 Current Reward</div>
+            <div className={styles.rewardDisplay}>
+                <div className={styles.rewardEmoji}>{currentReward.emoji}</div>
+                <div className={styles.rewardName}>{currentReward.name}</div>
+                <div className={styles.rewardTier}>Keep hydrating!</div>
+            </div>
         </div>
     );
 }

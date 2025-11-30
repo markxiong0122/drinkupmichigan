@@ -1,44 +1,66 @@
-.instructions {
-    background: rgba(0, 0, 0, 0.2);
-    padding: 25px;
-    border-radius: 20px;
-    margin-top: 10px;
-    font-size: 0.9rem;
-    border: 1px solid var(--glass-border);
+.card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 30px;
+    backdrop-filter: blur(20px);
 }
 
-.instructions h3 {
-    margin-bottom: 15px;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: rgba(255, 255, 255, 0.5);
+.cardTitle {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #ffffff;
 }
 
-.keyRow {
+.instructionsGrid {
+    display: grid;
+    gap: 15px;
+}
+
+.instructionItem {
     display: flex;
     align-items: center;
-    margin-bottom: 12px;
-    color: rgba(255, 255, 255, 0.8);
+    gap: 15px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
 }
 
-.keyRow:last-child {
-    margin-bottom: 0;
+.keyBadge {
+    min-width: 60px;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    font-weight: 700;
+    text-align: center;
+    font-size: 0.85rem;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
-.key {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 30px;
-    height: 30px;
-    padding: 0 8px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 6px;
-    margin-right: 12px;
-    font-family: monospace;
-    font-weight: bold;
-    font-size: 0.8rem;
-    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+.instructionText {
+    flex: 1;
+    font-size: 0.95rem;
+    color: #e0e6ed;
+}
+
+.instructionHighlight {
+    color: #fbbf24;
+    font-weight: 600;
+}
+
+.newMechanicNotice {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(251, 191, 36, 0.1);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    border-radius: 12px;
+    font-size: 0.9rem;
+}
+
+.noticeTitle {
+    color: #fbbf24;
+    font-weight: 700;
+    margin-bottom: 5px;
 }

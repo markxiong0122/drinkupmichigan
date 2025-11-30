@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hydration Rewards</title>
+    <title>HydroTrack - Rewards</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,11 +15,40 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #0093E9 0%, #80D0C7 100%);
-            color: white;
+            font-family: 'Space Grotesk', sans-serif;
+            background: #0a0e27;
+            color: #e0e6ed;
             min-height: 100vh;
-            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3), transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 121, 198, 0.3), transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(59, 130, 246, 0.3), transparent 50%);
+            animation: gradientShift 15s ease infinite;
+            z-index: 0;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(50px, 30px) scale(1.1); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
         }
 
         .header {
@@ -24,54 +56,61 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 40px;
-            flex-wrap: wrap;
-            gap: 20px;
+            padding: 20px 30px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
         }
 
         h1 {
-            font-size: 2.5rem;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .back-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 10px 25px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1rem;
+            padding: 12px 24px;
+            border-radius: 12px;
             text-decoration: none;
+            font-weight: 600;
             transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
 
         .back-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
         }
 
         .content {
-            max-width: 1200px;
-            margin: 0 auto;
             display: flex;
             flex-direction: column;
-            gap: 40px;
+            gap: 30px;
         }
 
         .section {
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.03);
             padding: 30px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
         }
 
         .section h2 {
-            font-size: 2rem;
-            margin-bottom: 20px;
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            color: #ffffff;
         }
 
-        /* Today's Achievement */
         .current-reward {
             text-align: center;
-            padding: 20px;
+            padding: 30px;
         }
 
         .reward-emoji {
@@ -89,6 +128,7 @@
             font-size: 2.5rem;
             font-weight: bold;
             margin-bottom: 10px;
+            color: #ffffff;
         }
 
         .reward-description {
@@ -100,9 +140,9 @@
         .progress-text {
             font-size: 1.1rem;
             opacity: 0.8;
+            color: #9ca3af;
         }
 
-        /* Rewards Grid */
         .rewards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -111,25 +151,25 @@
         }
 
         .reward-card {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
             padding: 25px;
-            border-radius: 15px;
+            border-radius: 16px;
             text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: transform 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .reward-card.unlocked {
-            background: rgba(255, 255, 255, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.6);
+            background: rgba(102, 126, 234, 0.1);
+            border: 2px solid rgba(102, 126, 234, 0.4);
         }
 
         .reward-card.locked {
-            opacity: 0.6;
+            opacity: 0.5;
         }
 
         .reward-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
         .card-emoji {
@@ -141,6 +181,7 @@
             font-size: 1.3rem;
             font-weight: bold;
             margin-bottom: 10px;
+            color: #ffffff;
         }
 
         .card-threshold {
@@ -150,25 +191,25 @@
         }
 
         .unlocked-badge {
-            background: rgba(76, 175, 80, 0.8);
-            padding: 5px 15px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            padding: 6px 16px;
             border-radius: 20px;
             display: inline-block;
             font-size: 0.9rem;
+            font-weight: 600;
         }
 
         .locked-badge {
-            background: rgba(158, 158, 158, 0.5);
-            padding: 5px 15px;
+            background: rgba(158, 158, 158, 0.3);
+            padding: 6px 16px;
             border-radius: 20px;
             display: inline-block;
             font-size: 0.9rem;
         }
 
-        /* Lake Michigan Section */
         .lake-section {
-            background: linear-gradient(135deg, rgba(33, 150, 243, 0.3) 0%, rgba(3, 169, 244, 0.3) 100%);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(16, 185, 129, 0.2) 100%);
+            border: 2px solid rgba(59, 130, 246, 0.3);
         }
 
         .lake-stats {
@@ -179,27 +220,33 @@
         }
 
         .lake-stat {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 20px;
-            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 25px;
+            border-radius: 16px;
             text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .lake-value {
             font-size: 2rem;
             font-weight: bold;
             margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .lake-label {
             font-size: 1rem;
             opacity: 0.9;
+            color: #9ca3af;
         }
 
         .lake-info {
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.05);
             padding: 25px;
-            border-radius: 15px;
+            border-radius: 16px;
             line-height: 1.8;
         }
 
@@ -209,14 +256,14 @@
         }
 
         .fun-fact {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(251, 191, 36, 0.1);
             padding: 15px;
-            border-radius: 10px;
+            border-radius: 12px;
             margin-top: 20px;
             font-style: italic;
+            border: 1px solid rgba(251, 191, 36, 0.3);
         }
 
-        /* Motivation */
         .motivation {
             text-align: center;
             font-size: 1.5rem;
@@ -225,7 +272,7 @@
 
         @media (max-width: 768px) {
             h1 {
-                font-size: 2rem;
+                font-size: 1.6rem;
             }
 
             .reward-emoji {
@@ -239,66 +286,63 @@
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>🏆 Your Hydration Rewards</h1>
-        <a href="draft counter.html" class="back-btn">← Back to Tracker</a>
-    </div>
-
-    <div class="content">
-        <!-- Today's Achievement -->
-        <div class="section">
-            <h2>Today's Achievement</h2>
-            <div class="current-reward">
-                <div class="reward-emoji" id="currentRewardEmoji">🐟</div>
-                <div class="reward-name" id="currentRewardName">Fish Tank</div>
-                <div class="reward-description" id="currentRewardDesc">Starting your journey!</div>
-                <div class="progress-text" id="progressText">0 mL / 3000 mL (0%)</div>
-            </div>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 Your Hydration Rewards</h1>
+            <a href="draft counter.html" class="back-btn">← Back to Tracker</a>
         </div>
 
-        <!-- All Rewards -->
-        <div class="section">
-            <h2>All Rewards</h2>
-            <div class="rewards-grid" id="rewardsGrid"></div>
-        </div>
-
-        <!-- Lake Michigan Progress -->
-        <div class="section lake-section">
-            <h2>🌊 Draining Lake Michigan Challenge</h2>
-            <div class="lake-stats">
-                <div class="lake-stat">
-                    <div class="lake-value" id="lakeLiters">0 L</div>
-                    <div class="lake-label">Total Water Consumed</div>
-                </div>
-                <div class="lake-stat">
-                    <div class="lake-value" id="lakeGallons">0 gal</div>
-                    <div class="lake-label">In Gallons</div>
-                </div>
-                <div class="lake-stat">
-                    <div class="lake-value" id="lakePercent">0.00e+0%</div>
-                    <div class="lake-label">of Lake Michigan</div>
+        <div class="content">
+            <div class="section">
+                <h2>Today's Achievement</h2>
+                <div class="current-reward">
+                    <div class="reward-emoji" id="currentRewardEmoji">🐟</div>
+                    <div class="reward-name" id="currentRewardName">Fish Tank</div>
+                    <div class="reward-description" id="currentRewardDesc">Starting your journey!</div>
+                    <div class="progress-text" id="progressText">0 mL / 3000 mL (0%)</div>
                 </div>
             </div>
-            
-            <div class="lake-info">
-                <p>Lake Michigan contains approximately <strong>4,920 km³</strong> of water.</p>
-                <p>That's <strong>1.3 quadrillion gallons</strong> or <strong>4.92 quadrillion liters</strong>!</p>
-                <p class="fun-fact" id="cubicMeters">
-                    At your current pace, you've contributed <strong>0.000000 cubic meters</strong> towards draining the lake!
-                </p>
-            </div>
-        </div>
 
-        <!-- Motivation -->
-        <div class="section">
-            <div class="motivation">
-                Keep up the great work! Every drop counts towards better hydration and health! 💪💧
+            <div class="section">
+                <h2>All Rewards</h2>
+                <div class="rewards-grid" id="rewardsGrid"></div>
+            </div>
+
+            <div class="section lake-section">
+                <h2>🌊 Draining Lake Michigan Challenge</h2>
+                <div class="lake-stats">
+                    <div class="lake-stat">
+                        <div class="lake-value" id="lakeLiters">0 L</div>
+                        <div class="lake-label">Total Water Consumed</div>
+                    </div>
+                    <div class="lake-stat">
+                        <div class="lake-value" id="lakeGallons">0 gal</div>
+                        <div class="lake-label">In Gallons</div>
+                    </div>
+                    <div class="lake-stat">
+                        <div class="lake-value" id="lakePercent">0.00e+0%</div>
+                        <div class="lake-label">of Lake Michigan</div>
+                    </div>
+                </div>
+                
+                <div class="lake-info">
+                    <p>Lake Michigan contains approximately <strong>4,920 km³</strong> of water.</p>
+                    <p>That's <strong>1.3 quadrillion gallons</strong> or <strong>4.92 quadrillion liters</strong>!</p>
+                    <p class="fun-fact" id="cubicMeters">
+                        At your current pace, you've contributed <strong>0.000000 cubic meters</strong> towards draining the lake!
+                    </p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="motivation">
+                    Keep up the great work! Every drop counts towards better hydration and health! 💪💧
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Lake Michigan volume: 4,920 km³ = 4,920,000,000,000,000 mL
         const LAKE_MICHIGAN_VOLUME_ML = 4920000000000000;
 
         const rewards = [
@@ -309,7 +353,6 @@
         ];
 
         function loadData() {
-            // Load today's data
             const saved = localStorage.getItem('hydrationData');
             let totalDailyWater = 0;
             let dailyGoal = 3000;
@@ -328,14 +371,11 @@
                 }
             }
 
-            // Load all-time total
             const allTimeSaved = localStorage.getItem('allTimeWater');
             let allTimeTotal = allTimeSaved ? parseInt(allTimeSaved) : 0;
 
-            // Calculate percentage
             const percentage = Math.min((totalDailyWater / dailyGoal) * 100, 100);
 
-            // Update today's achievement
             let currentReward = rewards[0];
             for (const reward of rewards) {
                 if (percentage >= reward.threshold) {
@@ -349,7 +389,6 @@
             document.getElementById('progressText').textContent = 
                 `${totalDailyWater} mL / ${dailyGoal} mL (${Math.round(percentage)}%)`;
 
-            // Update rewards grid
             const grid = document.getElementById('rewardsGrid');
             grid.innerHTML = '';
             
@@ -372,7 +411,6 @@
                 grid.appendChild(card);
             });
 
-            // Update Lake Michigan stats
             const lakeMichiganPercentage = (allTimeTotal / LAKE_MICHIGAN_VOLUME_ML) * 100;
             const lakeMichiganLiters = allTimeTotal / 1000;
             const lakeMichiganGallons = lakeMichiganLiters * 0.264172;
@@ -391,9 +429,7 @@
                 `At your current pace, you've contributed <strong>${cubicMeters.toFixed(6)} cubic meters</strong> towards draining the lake!`;
         }
 
-        // Initialize
         loadData();
     </script>
 </body>
 </html>
-
