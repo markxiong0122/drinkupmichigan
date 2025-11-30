@@ -29,12 +29,16 @@ export default function HydrationTracker() {
     const [statusIcon, setStatusIcon] = useState('🥤');
     const [statusHint, setStatusHint] = useState('Hold cup + Press drink');
     const [showSettings, setShowSettings] = useState(false);
+    const [lastDrinkTime, setLastDrinkTime] = useState<number | null>(null);
 
     // Refs for values accessed in event listeners/intervals
     const drinkingStartTimeRef = useRef<number>(0);
     const isBottleHeldRef = useRef(isBottleHeld);
     const isDrinkingPressedRef = useRef(isDrinkingPressed);
     const mlPerSecondRef = useRef(mlPerSecond);
+
+    // Audio ref - placeholder for future audio file
+    const reminderAudioRef = useRef<HTMLAudioElement | null>(null);
 
     // Sync refs with state
     useEffect(() => { isBottleHeldRef.current = isBottleHeld; }, [isBottleHeld]);
@@ -60,7 +64,7 @@ export default function HydrationTracker() {
                 console.error("Failed to parse saved data", e);
             }
         }
-        
+
         // Load all-time water
         const allTimeSaved = localStorage.getItem('allTimeWater');
         if (allTimeSaved) {
@@ -82,6 +86,15 @@ export default function HydrationTracker() {
         localStorage.setItem('hydrationData', JSON.stringify(data));
     }, [totalDailyWater, currentWater, dailyGoal, mlPerSecond]);
 
+    // Initialize all-time water on first load
+    useEffect(() => {
+        const allTimeSaved = localStorage.getItem('allTimeWater');
+        if (!allTimeSaved) {
+            localStorage.setItem('allTimeWater', '0');
+        }
+    }, []);
+
+
     // Check for goal completion
     useEffect(() => {
         if (currentWater >= dailyGoal && dailyGoal > 0) {
@@ -92,10 +105,38 @@ export default function HydrationTracker() {
         }
     }, [currentWater, dailyGoal]);
 
+    // Initialize audio and check inactivity timer
+    useEffect(() => {
+        // Initialize audio element with imported sound file
+        reminderAudioRef.current = new Audio('/sounds/reminder1.mp3');
+
+        // Check every second if we need to play the reminder
+        const checkInterval = setInterval(() => {
+            if (lastDrinkTime !== null) {
+                const timeSinceLastDrink = Date.now() - lastDrinkTime;
+                const tenSecondsInMs = 10 * 100git 0; // 10 seconds
+                console.log(`⏱️ Timer check: ${(timeSinceLastDrink / 1000).toFixed(1)}s since last drink`);
+
+                if (timeSinceLastDrink >= tenSecondsInMs) {
+                    // Play reminder sound continuously (don't reset timer)
+                    console.log('🔔 Reminder: Time to drink water! (10 seconds passed - playing sound)');
+                    reminderAudioRef.current?.play().catch(err => {
+                        console.error('Failed to play reminder sound:', err);
+                    });
+                    // Don't reset timer - keep playing until keyboard input
+                }
+            } else {
+                console.log('⏱️ Timer check: No active timer (lastDrinkTime is null)');
+            }
+        }, 1000); // Check every second
+
+        return () => clearInterval(checkInterval);
+    }, [lastDrinkTime]);
+
     // Update status display
     const updateStatus = (held: boolean, pressed: boolean) => {
         const isDrinking = held && pressed;
-        
+
         if (isDrinking) {
             setStatusIcon('💧');
             setStatusText('Drinking!');
@@ -118,7 +159,7 @@ export default function HydrationTracker() {
     // Update drinking state based on both keys
     const updateDrinkingState = (held: boolean, pressed: boolean) => {
         const shouldBeDrinking = held && pressed;
-        
+
         if (shouldBeDrinking && drinkingStartTimeRef.current === 0) {
             // Start drinking
             drinkingStartTimeRef.current = Date.now();
@@ -130,7 +171,7 @@ export default function HydrationTracker() {
             if (waterAdded > 0) {
                 setCurrentWater(prev => prev + waterAdded);
                 setTotalDailyWater(prev => prev + waterAdded);
-                
+
                 // Update all-time water
                 setAllTimeWater(prev => {
                     const newValue = prev + waterAdded;
@@ -154,10 +195,62 @@ export default function HydrationTracker() {
                 setIsBottleHeld(true);
                 updateStatus(true, isDrinkingPressedRef.current);
                 updateDrinkingState(true, isDrinkingPressedRef.current);
+
+                // Reset timer only if BOTH keys are now pressed (drinking)
+                if (isDrinkingPressedRef.current) {
+                    const now = Date.now();
+                    console.log('🟢 Timer RESET (both keys pressed): lastDrinkTime set to', new Date(now).toLocaleTimeString());
+                    setLastDrinkTime(now);
+
+                    // Stop audio immediately if playing
+                    if (reminderAudioRef.current) {
+                        reminderAudioRef.current.pause();
+                        reminderAudioRef.current.currentTime = 0;
+                        console.log('🔇 Audio stopped');
+                    }
+                }
             } else if (e.code === 'ArrowDown') {
                 setIsDrinkingPressed(true);
                 updateStatus(isBottleHeldRef.current, true);
                 updateDrinkingState(isBottleHeldRef.current, true);
+
+                // Reset timer only if BOTH keys are now pressed (drinking)
+                if (isBottleHeldRef.current) {
+                    const now = Date.now();
+                    console.log('🟢 Timer RESET (both keys pressed): lastDrinkTime set to', new Date(now).toLocaleTimeString());
+                    setLastDrinkTime(now);
+
+                    // Stop audio immediately if playing
+                    if (reminderAudioRef.current) {
+                        reminderAudioRef.current.pause();
+                        reminderAudioRef.current.currentTime = 0;
+                        console.log('🔇 Audio stopped');
+                    }
+                }
+            } else if (e.code === 'Space') {
+                // Reset everything
+                const held = isBottleHeldRef.current;
+                const pressed = isDrinkingPressedRef.current;
+
+                if (drinkingStartTimeRef.current > 0) {
+                    const drinkDuration = (Date.now() - drinkingStartTimeRef.current) / 1000;
+                    const waterAdded = Math.round(drinkDuration * mlPerSecondRef.current);
+
+                    if (waterAdded > 0) {
+                        setCurrentWater(prev => prev + waterAdded);
+                        setTotalDailyWater(prev => prev + waterAdded);
+
+                        const allTimeSaved = localStorage.getItem('allTimeWater');
+                        let allTimeTotal = allTimeSaved ? parseInt(allTimeSaved) : 0;
+                        allTimeTotal += waterAdded;
+                        localStorage.setItem('allTimeWater', allTimeTotal.toString());
+                    }
+                }
+
+                setIsBottleHeld(false);
+                setIsDrinkingPressed(false);
+                drinkingStartTimeRef.current = 0;
+                updateStatus(false, false);
             }
         };
 
@@ -190,7 +283,7 @@ export default function HydrationTracker() {
     useEffect(() => {
         let interval: NodeJS.Timeout;
         const isDrinking = isBottleHeld && isDrinkingPressed;
-        
+
         if (isDrinking && drinkingStartTimeRef.current > 0) {
             interval = setInterval(() => {
                 const now = Date.now();
@@ -200,19 +293,19 @@ export default function HydrationTracker() {
                     if (stepWater > 0) {
                         setCurrentWater(prev => prev + stepWater);
                         setTotalDailyWater(prev => prev + stepWater);
-                        
+
                         setAllTimeWater(prev => {
                             const newValue = prev + stepWater;
                             localStorage.setItem('allTimeWater', newValue.toString());
                             return newValue;
                         });
-                        
+
                         drinkingStartTimeRef.current = now;
                     }
                 }
             }, 100);
         }
-        
+
         return () => clearInterval(interval);
     }, [isBottleHeld, isDrinkingPressed]);
 
@@ -242,8 +335,8 @@ export default function HydrationTracker() {
             <div className={styles.mainContainer}>
                 <div className={styles.infoContainer}>
                     <Stats dailyGoal={dailyGoal} totalDailyWater={totalDailyWater} />
-                    <Reward 
-                        percentage={percentage} 
+                    <Reward
+                        percentage={percentage}
                         totalDailyWater={totalDailyWater}
                         dailyGoal={dailyGoal}
                         allTimeWater={allTimeWater}
