@@ -1,0 +1,113 @@
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modalShow {
+    display: flex;
+    opacity: 1;
+}
+
+.modalContent {
+    background: #0a0a15;
+    color: white;
+    padding: 40px;
+    border-radius: 24px;
+    max-width: 450px;
+    width: 90%;
+    border: 1px solid var(--glass-border);
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+    transform: scale(0.9);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modalShow .modalContent {
+    transform: scale(1);
+}
+
+.modalContent h2 {
+    margin-bottom: 30px;
+    color: white;
+    font-size: 1.8rem;
+    text-align: center;
+    font-weight: 700;
+}
+
+.formGroup {
+    margin-bottom: 25px;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+}
+
+.formGroup input {
+    width: 100%;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    font-size: 1rem;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.formGroup input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 4px rgba(0, 242, 255, 0.1);
+}
+
+.btnGroup {
+    display: flex;
+    gap: 15px;
+    margin-top: 40px;
+}
+
+.btn {
+    flex: 1;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btnPrimary {
+    background: var(--primary);
+    color: #000;
+}
+
+.btnPrimary:hover {
+    background: #fff;
+    box-shadow: 0 0 20px var(--primary-glow);
+}
+
+.btnSecondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.btnSecondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
