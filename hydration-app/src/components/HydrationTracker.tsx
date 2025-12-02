@@ -1,11 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import Bottle from './Bottle';
-import Instructions from './Instructions';
-import Reward from './Reward';
-import SettingsModal from './SettingsModal';
-import Stats from './Stats';
+import emailjs from '@emailjs/browser';
+import { Settings as SettingsIcon, WaterDrop as WaterDropIcon } from '@mui/icons-material';
 import {
     AppBar,
     Box,
@@ -16,7 +12,12 @@ import {
     Toolbar,
     Typography,
 } from '@mui/material';
-import { Settings as SettingsIcon, WaterDrop as WaterDropIcon } from '@mui/icons-material';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import Bottle from './Bottle';
+import Instructions from './Instructions';
+import Reward from './Reward';
+import SettingsModal from './SettingsModal';
+import Stats from './Stats';
 
 interface HydrationData {
     date: string;
@@ -42,6 +43,8 @@ export default function HydrationTracker() {
     const [statusHint, setStatusHint] = useState('Hold cup + Press drink');
     const [showSettings, setShowSettings] = useState(false);
     const [lastDrinkTime, setLastDrinkTime] = useState<number | null>(null);
+    const [lastUpArrowTime, setLastUpArrowTime] = useState<number>(0);
+    const [emailStatus, setEmailStatus] = useState<string>('');
 
     // Refs for values accessed in event listeners/intervals
     const drinkingStartTimeRef = useRef<number>(0);
@@ -106,6 +109,11 @@ export default function HydrationTracker() {
         if (!allTimeSaved) {
             localStorage.setItem('allTimeWater', '0');
         }
+    }, []);
+
+    // Initialize EmailJS
+    useEffect(() => {
+        emailjs.init('jOFLhf2RZu0onj_Zt');
     }, []);
 
 
@@ -198,6 +206,59 @@ export default function HydrationTracker() {
         }
     };
 
+    // Send email function
+    const sendEmail = useCallback(async () => {
+        try {
+            setEmailStatus('📧 Sending emails...');
+
+            // List of recipients - add more email addresses here
+            const recipients = [
+                'zhizhongs@uchicago.edu',
+                'ruotian2003@uchicago.edu',
+                'markxiong0122@gmail.com'
+            ];
+
+            // Send email to each recipient
+            const emailPromises = recipients.map(async (recipient) => {
+                const templateParams = {
+                    to_email: recipient,
+                    subject: 'Hydration Reminder',
+                    message: `Time to drink water! I've consumed ${totalDailyWater}ml today out of my ${dailyGoal}ml goal.`,
+                    from_name: 'HydroTrack App'
+                };
+
+                // Replace 'YOUR_SERVICE_ID' and 'YOUR_TEMPLATE_ID' with your actual EmailJS service and template IDs
+                return emailjs.send('service_nu9dh4u', 'template_km55v7j', templateParams);
+            });
+
+            // Wait for all emails to be sent
+            const results = await Promise.allSettled(emailPromises);
+
+            // Check results
+            const successful = results.filter(result => result.status === 'fulfilled').length;
+            const failed = results.filter(result => result.status === 'rejected').length;
+
+            if (failed === 0) {
+                console.log(`All ${successful} emails sent successfully`);
+                setEmailStatus(`✅ Sent to ${successful} recipient${successful > 1 ? 's' : ''}!`);
+            } else if (successful > 0) {
+                console.log(`${successful} emails sent successfully, ${failed} failed`);
+                setEmailStatus(`⚠️ Sent to ${successful}, ${failed} failed`);
+            } else {
+                throw new Error('All emails failed to send');
+            }
+
+            // Clear status after 4 seconds
+            setTimeout(() => setEmailStatus(''), 4000);
+        } catch (error) {
+            console.error('Failed to send emails:', error);
+            setEmailStatus('❌ Failed to send emails');
+
+            // Clear error status after 5 seconds
+            setTimeout(() => setEmailStatus(''), 5000);
+        }
+    }, [totalDailyWater, dailyGoal]);
+
     // Keyboard controls
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -206,13 +267,22 @@ export default function HydrationTracker() {
             }
 
             if (e.code === 'ArrowUp') {
+                const now = Date.now();
+                const timeSinceLastUp = now - lastUpArrowTime;
+
+                // Check for double-tap (within 300ms)
+                if (timeSinceLastUp < 300) {
+                    console.log('📧 Double-tap detected! Sending email...');
+                    sendEmail();
+                }
+
+                setLastUpArrowTime(now);
                 setIsBottleHeld(true);
                 updateStatus(true, isDrinkingPressedRef.current);
                 updateDrinkingState(true, isDrinkingPressedRef.current);
 
                 // Reset timer only if BOTH keys are now pressed (drinking)
                 if (isDrinkingPressedRef.current) {
-                    const now = Date.now();
                     console.log('🟢 Timer RESET (both keys pressed): lastDrinkTime set to', new Date(now).toLocaleTimeString());
                     setLastDrinkTime(now);
 
@@ -243,9 +313,6 @@ export default function HydrationTracker() {
                 }
             } else if (e.code === 'Space') {
                 // Reset everything
-                const held = isBottleHeldRef.current;
-                const pressed = isDrinkingPressedRef.current;
-
                 if (drinkingStartTimeRef.current > 0) {
                     const drinkDuration = (Date.now() - drinkingStartTimeRef.current) / 1000;
                     const waterAdded = Math.round(drinkDuration * mlPerSecondRef.current);
@@ -291,7 +358,7 @@ export default function HydrationTracker() {
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
         };
-    }, []);
+    }, [sendEmail, lastUpArrowTime]);
 
     // Update display while drinking (for animation)
     useEffect(() => {
@@ -389,6 +456,11 @@ export default function HydrationTracker() {
                                 <Typography variant="h2" sx={{ mb: 1 }}>{statusIcon}</Typography>
                                 <Typography variant="h6" color="text.primary">{statusText}</Typography>
                                 <Typography variant="body2" color="text.secondary">{statusHint}</Typography>
+                                {emailStatus && (
+                                    <Typography variant="body2" sx={{ mt: 1, fontWeight: 'bold' }}>
+                                        {emailStatus}
+                                    </Typography>
+                                )}
                             </CardContent>
                         </Card>
                     </Box>
