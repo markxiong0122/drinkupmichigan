@@ -1,9 +1,5 @@
 ```bash
-npm run dev
+yarn install
 # or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+yarn run dev
 ```
