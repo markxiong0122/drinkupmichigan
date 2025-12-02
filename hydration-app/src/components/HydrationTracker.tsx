@@ -113,7 +113,7 @@ export default function HydrationTracker() {
 
     // Initialize EmailJS
     useEffect(() => {
-        emailjs.init('jOFLhf2RZu0onj_Zt');
+        emailjs.init('WeXPMoYZjfJuvB5lG');
     }, []);
 
 
@@ -228,7 +228,7 @@ export default function HydrationTracker() {
                 };
 
                 // Replace 'YOUR_SERVICE_ID' and 'YOUR_TEMPLATE_ID' with your actual EmailJS service and template IDs
-                return emailjs.send('service_nu9dh4u', 'template_km55v7j', templateParams);
+                return emailjs.send('service_hl7upi6', 'template_99k7j0k', templateParams);
             });
 
             // Wait for all emails to be sent
