@@ -404,6 +404,35 @@ export default function HydrationTracker() {
         setShowSettings(false);
     };
 
+    // Reset handler
+    const handleReset = () => {
+        // Reset all state
+        setCurrentWater(0);
+        setTotalDailyWater(0);
+        setAllTimeWater(0);
+        setIsBottleHeld(false);
+        setIsDrinkingPressed(false);
+        setLastDrinkTime(null);
+        setStatusText('Ready to drink');
+        setStatusIcon('🥤');
+        setStatusHint('Hold cup + Press drink');
+        drinkingStartTimeRef.current = 0;
+
+        // Clear localStorage
+        localStorage.setItem('allTimeWater', '0');
+        const data: HydrationData = {
+            date: new Date().toDateString(),
+            totalDailyWater: 0,
+            currentWater: 0,
+            dailyGoal,
+            mlPerSecond,
+            timerSeconds
+        };
+        localStorage.setItem('hydrationData', JSON.stringify(data));
+
+        console.log('🔄 All progress has been reset');
+    };
+
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static" elevation={0} sx={{ bgcolor: 'background.paper', borderBottom: '1px solid', borderColor: 'divider' }}>
@@ -468,7 +497,7 @@ export default function HydrationTracker() {
                     </Box>
 
                     <Box>
-                        <Instructions />
+                        <Instructions onReset={handleReset} />
                     </Box>
                 </Box>
             </Container>

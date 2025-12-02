@@ -6,10 +6,15 @@ import {
     Chip,
     Alert,
     AlertTitle,
+    Button,
 } from '@mui/material';
-import { KeyboardArrowUp as KeyboardArrowUpIcon, KeyboardArrowDown as KeyboardArrowDownIcon, KeyboardArrowRight as KeyboardArrowRightIcon, Email as EmailIcon } from '@mui/icons-material';
+import { KeyboardArrowUp as KeyboardArrowUpIcon, KeyboardArrowDown as KeyboardArrowDownIcon, KeyboardArrowRight as KeyboardArrowRightIcon, RestartAlt as RestartAltIcon } from '@mui/icons-material';
 
-export default function Instructions() {
+interface InstructionsProps {
+    onReset: () => void;
+}
+
+export default function Instructions({ onReset }: InstructionsProps) {
     return (
         <Card>
             <CardContent>
@@ -34,6 +39,16 @@ export default function Instructions() {
                     <AlertTitle>New Mechanic</AlertTitle>
                     You must hold BOTH the cup (↑) AND drink button (↓) simultaneously to add water!
                 </Alert>
+                <Button
+                    variant="outlined"
+                    color="error"
+                    fullWidth
+                    startIcon={<RestartAltIcon />}
+                    onClick={onReset}
+                    sx={{ mt: 2 }}
+                >
+                    Reset All Progress
+                </Button>
             </CardContent>
         </Card>
     );
