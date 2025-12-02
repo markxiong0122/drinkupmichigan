@@ -43,7 +43,7 @@ export default function HydrationTracker() {
     const [statusHint, setStatusHint] = useState('Hold cup + Press drink');
     const [showSettings, setShowSettings] = useState(false);
     const [lastDrinkTime, setLastDrinkTime] = useState<number | null>(null);
-    const [lastUpArrowTime, setLastUpArrowTime] = useState<number>(0);
+    const [lastRightArrowTime, setLastRightArrowTime] = useState<number>(0);
     const [emailStatus, setEmailStatus] = useState<string>('');
 
     // Refs for values accessed in event listeners/intervals
@@ -268,18 +268,6 @@ export default function HydrationTracker() {
 
             if (e.code === 'ArrowUp') {
                 const now = Date.now();
-                const timeSinceLastUp = now - lastUpArrowTime;
-
-                // Check for double-tap (within 300ms) - only trigger if down arrow is NOT pressed
-                if (timeSinceLastUp < 300 && !isDrinkingPressedRef.current) {
-                    console.log('📧 Double-tap detected! Sending email...');
-                    sendEmail();
-                    setLastUpArrowTime(now);
-                    // Don't set bottle as held when it's a double-tap for email
-                    return;
-                }
-
-                setLastUpArrowTime(now);
                 setIsBottleHeld(true);
                 updateStatus(true, isDrinkingPressedRef.current);
                 updateDrinkingState(true, isDrinkingPressedRef.current);
@@ -296,6 +284,17 @@ export default function HydrationTracker() {
                         console.log('🔇 Audio stopped');
                     }
                 }
+            } else if (e.code === 'ArrowRight') {
+                const now = Date.now();
+                const timeSinceLastRight = now - lastRightArrowTime;
+
+                // Check for double-tap (within 300ms)
+                if (timeSinceLastRight < 300) {
+                    console.log('📧 Double-tap detected! Sending email...');
+                    sendEmail();
+                }
+
+                setLastRightArrowTime(now);
             } else if (e.code === 'ArrowDown') {
                 setIsDrinkingPressed(true);
                 updateStatus(isBottleHeldRef.current, true);
@@ -361,7 +360,7 @@ export default function HydrationTracker() {
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
         };
-    }, [sendEmail, lastUpArrowTime]);
+    }, [sendEmail, lastRightArrowTime]);
 
     // Update display while drinking (for animation)
     useEffect(() => {
