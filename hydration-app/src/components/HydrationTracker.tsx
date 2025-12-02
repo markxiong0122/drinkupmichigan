@@ -270,10 +270,13 @@ export default function HydrationTracker() {
                 const now = Date.now();
                 const timeSinceLastUp = now - lastUpArrowTime;
 
-                // Check for double-tap (within 300ms)
-                if (timeSinceLastUp < 300) {
+                // Check for double-tap (within 300ms) - only trigger if down arrow is NOT pressed
+                if (timeSinceLastUp < 300 && !isDrinkingPressedRef.current) {
                     console.log('📧 Double-tap detected! Sending email...');
                     sendEmail();
+                    setLastUpArrowTime(now);
+                    // Don't set bottle as held when it's a double-tap for email
+                    return;
                 }
 
                 setLastUpArrowTime(now);
